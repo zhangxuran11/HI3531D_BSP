@@ -1,0 +1,27 @@
+#!/bin/sh
+ulimit -d unlimited
+ulimit -c unlimited
+
+grep "^sshd" /etc/passwd >& /dev/null
+if [ $? -ne 0 ]
+then
+    adduser sshd -H -D
+fi
+if [ ! -f "/etc/ssh/ssh_host_dsa_key" ];then
+    ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N ""
+fi
+if [ ! -f "/etc/ssh/ssh_host_rsa_key" ];then
+    ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ""
+fi
+if [ -d "/ko/extdrv/nvp6134_ex.ko" ];then
+    rm /ko/extdrv/nvp6134_ex.ko
+fi
+if [ -d "/ko/extdrv/sil9024_ex.ko" ];then
+    rm /ko/extdrv/sil9024.ko
+fi
+
+chown root /var/empty
+/sbin/sshd
+
+cd /ko/ && ./load3531d -i
+

@@ -1,0 +1,69 @@
+该脚本会自动把/bin/sh软链接指向/bin/bash        （ubuntu中 默认指向/bin/dash）
+
+
+
+1.  同步工程
+    (把arm-hisiv500-linux.tgz  Hi3531D_SDK_V1.0.3.0.tgz放在SDK_package目录)
+    或
+    (把arm-hisiv600-linux.tgz  Hi3531D_SDK_V2.0.4.0.tgz放在SDK_package目录)
+    ./build.sh init
+2.  初步构建
+    ./build.sh make
+3.  构建uboot
+    用configs目录下的配置文件替换根下的local.cfg
+    例如:
+        ln -s configs/ebaina.cfg ./local.cfg
+    
+    ./build.sh uboot
+
+4.  构建内核
+    ./build.sh kernel
+5. 构建文件系统
+    ./build.sh busybox
+6. 构建第三方组件
+    ./build.sh compoment
+    ./build.sh compoment install #安装到文件系统
+7. 构建ubi镜像
+    ./build.sh ubi
+
+补充:
+    ./build.sh hisi #构建hisi 通用文件系统
+    ./build.sh hidoo    #构建北京自研预监卡文件系统
+    ./build.sh mvr    #构建nova bsp+北京业务预监卡文件系统
+
+预监卡:
+    resource/nova   --nova bsp
+    resource/hidoo/etc/init.d/S91mvr_init     --hidoo业务启动脚本
+    
+    resource/hidoo	--hidoo业务
+    resource/hidoo/etc/init.d/S90mvr-run     --hidoo业务启动脚本
+    resource/hidoo/usr/H9-MVR/bin/              --hidoo可执行文件目录
+    resource/hidoo/usr/H9-MVR/configs/              --hidoo配置目录
+
+
+
+注意:
+1.查看./build.sh 支持的所有构建选项:
+    common/目录下所有的build_xxxx.sh皆为可构建项
+    构建方法为:
+    ./build.sh xxxx
+2.
+    1.0.3版sdk提供的烧写镜像工具HiTools只能在烧写uboot时同时烧写内核才行，单独烧内核不成功。2.0.4版sdk的烧写工具无此问题。
+
+命令:
+    ./build.sh clean
+
+uboot 环境变量:
+    nand ubi启动
+        setenv bootcmd 'nand read 0x42000000 0x100000 0x400000;bootm 0x42000000'
+        setenv bootargs 'mem=512M console=ttyAMA0,115200 ip=192.168.10.75::192.168.10.1:255.255.255.0  ubi.mtd=2 root=ubi0:ubifs rootflags=sync rootfstype=ubifs rw mtdparts=hinand:1M(boot),4M(kernel),-(rootfs)'
+    nand yaffs2启动
+	setenv bootargs 'mem=512M console=ttyAMA0,115200 ip=192.168.10.75::192.168.10.1:255.255.255.0 root=/dev/mtdblock2 rw rootfstype=yaffs2 mtdparts=hinand:1M(boot),4M(kernel),-(rootfs)'
+	setenv bootcmd 'nand read 0x42000000 0x100000 0x400000;bootm 0x42000000'
+
+    nfs启动:
+        setenv bootargs 'mem=512M console=ttyAMA0,115200 root=/dev/nfs rw nfsroot=192.168.10.167:/home/linkpi/work/3531D/fs,proto=tcp ip=192.168.10.75 init=/linuxrc mtdparts=hinand:1M(boot),4M(kernel),250M(rootfs)'
+        或使用变量引用参数:
+        setenv bootargs 512M console=ttyAMA0,115200 root=/dev/nfs rw nfsroot=${serverip}:${nfs_rootpath},proto=tcp ip=${ipaddr} init=/linuxrc mtdparts=hinand:1M(boot),4M(kernel),250M(rootfs)
+
+        setenv bootcmd nand read 0x42000000 0x100000 0x400000;bootm 0x42000000
