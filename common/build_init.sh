@@ -10,12 +10,14 @@ if [ $? != 0 ];then
     pushd ${CROSS_COMPILER_PREFIX}
     chmod +x ./${CROSS_COMPILER_PREFIX}.install
     sudo ./${CROSS_COMPILER_PREFIX}.install
-    sudo apt install lib32z1 lib32ncurses5 cmake lib32stdc++6 u-boot-tools
     echo please input : source /etc/profile
     popd
     rm ${CROSS_COMPILER_PREFIX} -rf
     popd #SDK_package
 fi
+sudo apt install lib32ncurses5
+sudo apt install libncurses5-dev
+sudo apt install lib32z1-dev cmake lib32stdc++6 u-boot-tools texinfo
 which gcc
 if [ $? != 0 ];then
     sudo apt install gcc

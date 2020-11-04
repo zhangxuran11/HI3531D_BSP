@@ -1,6 +1,6 @@
 #!/bin/bash
 export TOP_DIRECTOR=$(pwd)
-if [ 0 == 1 ];then
+if [ 1 == 1 ];then
     sh_exec=$(ls -lh /bin/sh | awk '{print $11}')
     if [ "x"$sh_exec != "xbash" ];then
         sudo rm /bin/sh
