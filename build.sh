@@ -1,7 +1,7 @@
 #!/bin/bash
+export TOP_DIRECTOR=$(pwd)
 if [ 0 == 1 ];then
     sh_exec=$(ls -lh /bin/sh | awk '{print $11}')
-    export TOP_DIRECTOR=$(pwd)
     if [ "x"$sh_exec != "xbash" ];then
         sudo rm /bin/sh
         sudo ln -s /bin/bash /bin/sh
